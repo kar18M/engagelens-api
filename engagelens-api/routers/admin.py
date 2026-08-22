@@ -148,6 +148,7 @@ async def audit_log(
 async def system_health(current_user: TokenData = Depends(require_role("admin", "teacher"))):
     """Return basic system health information."""
     import psutil
+    import os
     try:
         cpu_percent = psutil.cpu_percent(interval=0.5)
         mem = psutil.virtual_memory()
@@ -157,17 +158,32 @@ async def system_health(current_user: TokenData = Depends(require_role("admin", 
         mem = None
         disk = None
 
-    from database.mongo_client import get_db
-    try:
-        db = get_db()
-        db.command("ping")
-        mongo_status = "connected"
-        student_count = db["students"].count_documents({})
-        attendance_count = db["attendance"].count_documents({})
-    except Exception as e:
-        mongo_status = f"error: {e}"
-        student_count = -1
-        attendance_count = -1
+    _backend = os.environ.get("DB_BACKEND", "mongo").strip().lower()
+    db_status = "unknown"
+    student_count = -1
+    attendance_count = -1
+
+    if _backend == "supabase":
+        try:
+            from database.supabase_client import get_supabase
+            sb = get_supabase()
+            s_res = sb.table("students").select("*", count="exact").execute()
+            a_res = sb.table("attendance").select("*", count="exact").execute()
+            student_count = s_res.count or 0
+            attendance_count = a_res.count or 0
+            db_status = "connected (supabase)"
+        except Exception as e:
+            db_status = f"supabase error: {e}"
+    else:
+        try:
+            from database.mongo_client import get_db
+            db = get_db()
+            db.command("ping")
+            student_count = db["students"].count_documents({})
+            attendance_count = db["attendance"].count_documents({})
+            db_status = "connected (mongodb)"
+        except Exception as e:
+            db_status = f"mongodb error: {e}"
 
     return {
         "server": {
@@ -186,8 +202,8 @@ async def system_health(current_user: TokenData = Depends(require_role("admin", 
             "used_gb":  round(disk.used / 1e9, 2) if disk else None,
             "percent":  disk.percent if disk else None,
         } if disk else None,
-        "mongodb": {
-            "status": mongo_status,
+        "database": {
+            "status": db_status,
             "students_enrolled": student_count,
             "attendance_records": attendance_count,
         },

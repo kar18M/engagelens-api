@@ -22,7 +22,7 @@ router = APIRouter()
 
 def _verify_credentials(username: str, password: str) -> dict:
     """Verify username/password and return user doc on success, raise HTTPException on failure."""
-    from auth.user_operations import get_user_by_username
+    from auth.user_operations import get_user_by_username, _backend, _get_supabase, _get_mongo_db
     from datetime import datetime
 
     username = username.strip().lower()
@@ -33,8 +33,8 @@ def _verify_credentials(username: str, password: str) -> dict:
     if not user.get("is_active", True):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account deactivated.")
 
-    lockout_until = user.get("lockout_until")
-    if lockout_until and datetime.utcnow() < lockout_until:
+    lockout_field = user.get("locked_until") or user.get("lockout_until")
+    if lockout_field and datetime.utcnow() < datetime.fromisoformat(str(lockout_field).replace("Z", "+00:00").replace("+00:00", "")) if isinstance(lockout_field, str) else False:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account temporarily locked.")
 
     stored_hash = user.get("password_hash", "")
@@ -45,23 +45,30 @@ def _verify_credentials(username: str, password: str) -> dict:
 
     if not pw_ok:
         # Record failed attempt
-        from database.mongo_client import get_db
-        from datetime import timedelta
-        db = get_db()
-        attempts = user.get("login_attempts", 0) + 1
-        update = {"login_attempts": attempts}
-        if attempts >= config.MAX_LOGIN_ATTEMPTS:
-            update["lockout_until"] = datetime.utcnow() + timedelta(minutes=config.LOCKOUT_DURATION_MINUTES)
-        db["users"].update_one({"user_id": user["user_id"]}, {"$set": update})
+        if _backend == "supabase":
+            sb = _get_supabase()
+            attempts = (user.get("failed_attempts") or 0) + 1
+            sb.table("users").update({"failed_attempts": attempts}).eq("user_id", user["user_id"]).execute()
+        else:
+            from datetime import timedelta
+            db = _get_mongo_db()
+            attempts = user.get("login_attempts", 0) + 1
+            update = {"login_attempts": attempts}
+            if attempts >= config.MAX_LOGIN_ATTEMPTS:
+                update["lockout_until"] = datetime.utcnow() + timedelta(minutes=config.LOCKOUT_DURATION_MINUTES)
+            db["users"].update_one({"user_id": user["user_id"]}, {"$set": update})
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password.")
 
     # Record successful login
-    from database.mongo_client import get_db
-    db = get_db()
-    db["users"].update_one(
-        {"user_id": user["user_id"]},
-        {"$set": {"last_login": datetime.utcnow(), "login_attempts": 0, "lockout_until": None}},
-    )
+    if _backend == "supabase":
+        sb = _get_supabase()
+        sb.table("users").update({"last_login": datetime.utcnow().isoformat(), "failed_attempts": 0}).eq("user_id", user["user_id"]).execute()
+    else:
+        db = _get_mongo_db()
+        db["users"].update_one(
+            {"user_id": user["user_id"]},
+            {"$set": {"last_login": datetime.utcnow(), "login_attempts": 0, "lockout_until": None}},
+        )
     return user
 
 
