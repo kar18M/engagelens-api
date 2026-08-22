@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"student_id":{"$numberInt":"1"},"date":{"$numberInt":"1"},"session":{"$numberInt":"1"}},"name":"notif_log_student_date_session_idx"}],"uuid":"f77635f5b85545f9a0db89eba4cfffee","collectionName":"notifications_log","type":"collection"}

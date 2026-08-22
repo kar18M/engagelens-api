@@ -1,0 +1,44 @@
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Enrollment photos (large, user-specific)
+data/enrolled_faces/*/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# InsightFace model cache (auto-downloaded, not committed)
+# ~/.insightface/  — stored in home dir, not in project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Logs
+*.log
+
+# Secrets — NEVER commit these
+.env
+# .env.example is safe to commit (no real values)
+
+# Large binary files — don't commit to GitHub
+ngrok
+smart_attend_transfer.zip
+*.zip
+*.tar.gz
+
+# Render / Docker build artifacts
+.dockerignore

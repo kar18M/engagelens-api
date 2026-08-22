@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: engagelens-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: standard          # 2 GB RAM — required for InsightFace buffalo_l
+    region: singapore       # Closest to India
+    envVars:
+      - key: DB_BACKEND
+        value: supabase
+      - key: ENROLLED_FACES_DIR
+        value: /opt/render/project/data/enrolled_faces
+      - key: INSIGHTFACE_HOME
+        value: /opt/render/project/data/.insightface
+      - key: SUPABASE_URL
+        fromDatabase: false
+        value: https://fxuvwigazfzjgvjipkep.supabase.co
+      # Add these as secret env vars in Render dashboard:
+      # SUPABASE_SERVICE_KEY  ← from Supabase Dashboard > Settings > API
+      # SUPABASE_ANON_KEY
+      # TELEGRAM_BOT_TOKEN
+    disk:
+      name: engagelens-data
+      mountPath: /opt/render/project/data
+      sizeGB: 10            # Stores InsightFace model (~500 MB) + enrolled face photos

@@ -1,0 +1,32 @@
+# EngageLens Python dependencies
+# Install with:  pip install -r requirements.txt
+# Note: insightface buffalo_l model (~500 MB) auto-downloads on first run.
+
+# ── Core Face AI ──────────────────────────────────────────────────────────────
+insightface==0.7.3
+onnxruntime==1.16.3          # CPU build — replace with onnxruntime-gpu for CUDA
+
+# ── Database ──────────────────────────────────────────────────────────────────
+pymongo==4.6.1                  # Local MongoDB (DB_BACKEND=mongo, default)
+supabase>=2.0.0                 # Cloud PostgreSQL (DB_BACKEND=supabase)
+python-dotenv>=1.0.0            # Loads .env credentials into os.environ
+
+# ── Web App / UI ──────────────────────────────────────────────────────────────
+streamlit>=1.36.0            # Phase 10: st.navigation() requires >=1.36
+streamlit-webrtc==0.47.1
+plotly==5.22.0
+
+# ── Vision / Image Utilities ──────────────────────────────────────────────────
+opencv-python==4.9.0.80
+Pillow==10.3.0
+numpy==1.26.4
+
+# ── WebRTC transport (required by streamlit-webrtc) ───────────────────────────
+av==11.0.0
+
+# ── Phase 9: Telegram Notifications ──────────────────────────────────────────
+requests>=2.31.0
+qrcode[pil]>=7.4.2
+
+# ── Phase 10: Authentication ──────────────────────────────────────────────────
+bcrypt>=4.1.2                # Password hashing (cost factor 12)

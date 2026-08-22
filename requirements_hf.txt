@@ -1,0 +1,29 @@
+# EngageLens API — Hugging Face Spaces requirements
+# All ML + FastAPI + Supabase dependencies in one file
+
+# ── FastAPI Backend ────────────────────────────────────────────────────────────
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.9
+psutil>=5.9.0
+
+# ── Face AI (InsightFace buffalo_l auto-downloads ~500 MB on first boot) ───────
+insightface==0.7.3
+onnxruntime==1.16.3
+
+# ── Vision ─────────────────────────────────────────────────────────────────────
+opencv-python-headless==4.9.0.80
+Pillow==10.3.0
+numpy==1.26.4
+
+# ── Database — Supabase cloud ──────────────────────────────────────────────────
+supabase>=2.0.0
+python-dotenv>=1.0.0
+
+# ── Notifications ──────────────────────────────────────────────────────────────
+requests>=2.31.0
+
+# ── Auth ───────────────────────────────────────────────────────────────────────
+bcrypt>=4.1.2

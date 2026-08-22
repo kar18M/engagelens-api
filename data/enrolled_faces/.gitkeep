@@ -1,0 +1,2 @@
+# This file keeps the enrolled_faces directory tracked by git.
+# Actual enrollment photos are stored here at runtime and are gitignored.

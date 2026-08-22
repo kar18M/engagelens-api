@@ -1,0 +1,12 @@
+# EngageLens FastAPI Backend Requirements
+# Install into the same venv as the Streamlit project (it already has all ML deps)
+# OR create a fresh venv and install both sets:
+#   pip install -r ../requirements.txt
+#   pip install -r requirements.txt
+
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.9
+psutil>=5.9.0
