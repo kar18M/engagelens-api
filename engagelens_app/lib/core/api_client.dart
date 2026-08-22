@@ -7,9 +7,10 @@ library;
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// Change this to your server's LAN IP before building the APK.
-/// Example: 'http://192.168.1.42:8000'
-const String kBaseUrl = 'http://10.242.159.207:8000';
+/// Change this to switch between local dev and cloud deployment.
+/// Cloud (Render):  'https://engagelens-api.onrender.com'
+/// Local dev:       'http://10.242.159.207:8000'
+const String kBaseUrl = 'https://engagelens-api.onrender.com';
 
 const _storage = FlutterSecureStorage();
 
@@ -23,8 +24,9 @@ class ApiClient {
     _dio = Dio(
       BaseOptions(
         baseUrl: kBaseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 30),
+        // Render free plan sleeps after 15min idle — first request takes ~30s to wake
+        connectTimeout: const Duration(seconds: 40),
+        receiveTimeout: const Duration(seconds: 90), // Face recognition is slow on free CPU
         headers: {'Content-Type': 'application/json'},
       ),
     );
