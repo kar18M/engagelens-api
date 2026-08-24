@@ -1,9 +1,3 @@
-"""
-routers/students.py
-====================
-CRUD endpoints for enrolled students.
-"""
-
 from typing import Optional
 from fastapi import APIRouter, HTTPException, status, Depends
 
@@ -11,7 +5,10 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
-from database.db_operations import (
+# Import from the abstraction layer (database/__init__.py) which selects
+# the correct backend (Supabase or MongoDB) via DB_BACKEND env var.
+# Do NOT import from database.db_operations directly — it imports pymongo at top level.
+from database import (
     get_all_students,
     get_student_by_id,
     delete_student,

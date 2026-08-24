@@ -1,0 +1,15 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.env
+ngrok
+*.zip
+*.tar.gz
+engagelens_backup/
+data/enrolled_faces/
+.streamlit/
+README.md
+*.log

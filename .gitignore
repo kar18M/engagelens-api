@@ -41,4 +41,4 @@ smart_attend_transfer.zip
 *.tar.gz
 
 # Render / Docker build artifacts
-.dockerignore
+# .dockerignore  ← do NOT ignore, needed for builds
